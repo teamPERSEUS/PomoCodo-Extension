@@ -28,17 +28,17 @@
     },
     "commands": [
       {
-        "command": "extension.startTimer",
+        "command": "extension.startPomocodo",
         "title": "Start Timer",
         "category": "Pomodoro"
       },
       {
-        "command": "extension.pauseTimer",
+        "command": "extension.pausePomocodo",
         "title": "Pause Timer",
         "category": "Pomodoro"
       },
       {
-        "command": "extension.resetTimer",
+        "command": "extension.resetPomocodo",
         "title": "Reset Timer",
         "category": "Pomodoro"
       }
