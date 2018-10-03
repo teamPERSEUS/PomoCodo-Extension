@@ -21,4 +21,3 @@ exports.startStates = new Set([
   timerState.PAUSED
 ]);
 exports.stopStates = new Set([timerState.RUNNING, timerState.PAUSED]);
-exports.pauseStates = new Set([timerState.RUNNING]);
