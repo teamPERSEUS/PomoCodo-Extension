@@ -1,1 +1,1 @@
-const timer
+const timerState = require('./timerStates');
