@@ -1,7 +1,6 @@
 exports.convertTime = function(milliseconds) {
   let MILLISECONDS_IN_SECOND = 1000;
   let SECONDS_IN_MINUTE = 60;
-  let DEFAULT_DURATION = 1500000; //25 minutes
 
   let totalSec = Math.round(milliseconds / MILLISECONDS_IN_SECOND);
   let minutes = Math.floor(totalSec / SECONDS_IN_MINUTE);
