@@ -1,0 +1,58 @@
+{
+  "name": "pomocodo",
+  "displayName": "Pomocodo",
+  "description": "Pomocodo",
+  "version": "0.0.1",
+  "publisher": "TeamPerseus",
+  "engines": {
+    "vscode": "^1.27.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./src/extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Pomodoro",
+      "properties": {
+        "pomodoro.interval": {
+          "type": "int",
+          "default": 25,
+          "description": "The number of minutes in a Pomodoro"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "extension.startTimer",
+        "title": "Start Timer",
+        "category": "Pomodoro"
+      },
+      {
+        "command": "extension.pauseTimer",
+        "title": "Pause Timer",
+        "category": "Pomodoro"
+      },
+      {
+        "command": "extension.resetTimer",
+        "title": "Reset Timer",
+        "category": "Pomodoro"
+      }
+    ]
+  },
+  "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "typescript": "^2.6.1",
+    "vscode": "^1.1.21",
+    "eslint": "^4.11.0",
+    "@types/node": "^8.10.25",
+    "@types/mocha": "^2.2.42"
+  }
+}
