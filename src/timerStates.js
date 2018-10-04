@@ -1,13 +1,15 @@
-exports.timerState = {
-  NULL: 'NULL',
-  READY: 'READY',
-  RUNNING: 'RUNNING',
-  PAUSED: 'PAUSED',
-  FINISHED: 'FINISHED',
-  DISPOSED: 'DISPOSED'
+const timerState = {
+  NULL: 'null',
+  READY: 'ready',
+  RUNNING: 'running',
+  PAUSED: 'paused',
+  FINISHED: 'finished',
+  DISPOSED: 'disposed'
 };
 
-exports.states = new set([
+exports.timerState = timerState;
+
+exports.states = new Set([
   timerState.NULL,
   timerState.READY,
   timerState.RUNNING,

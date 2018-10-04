@@ -1,3 +1,3 @@
-exports.startPomodoro = 'extension.startPomocodo';
-exports.pausePomodoro = 'extension.pausePomocodo';
-exports.resetPomodoro = 'extension.resetPomocodo';
+exports.startPomocodo = 'extension.startPomocodo';
+exports.pausePomocodo = 'extension.pausePomocodo';
+exports.resetPomocodo = 'extension.resetPomocodo';
