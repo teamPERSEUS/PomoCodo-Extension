@@ -1,7 +1,8 @@
 let request = require('request');
 
-var uplad = function () {
-  request("http://localhost:10345/", { method: 'POST', form: data, headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' } }
+var upload = function () {
+  request("http://localhost:1337/vsCode", { method: 'POST', form: { data: "test" }, headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' } }
   )
 }
 
+exports.upload = upload;

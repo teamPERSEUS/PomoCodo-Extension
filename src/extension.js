@@ -4,6 +4,7 @@ const vscode = require('vscode');
 const pomocodo = require('./pomocodo');
 const command = require('./command');
 const PomocodoTimer = new pomocodo.Pomocodo();
+const Uploader = require('./upload');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -15,6 +16,7 @@ function activate(context) {
 
   let start = vscode.commands.registerCommand(command.startPomocodo, () => {
     PomocodoTimer.start();
+    Uploader.upload();
   });
   let pause = vscode.commands.registerCommand(command.pausePomocodo, () => {
     PomocodoTimer.pause();
