@@ -11,9 +11,10 @@ function activate(context) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "test" is now active!');
+  console.log(command.startPomocodo)
 
   let start = vscode.commands.registerCommand(command.startPomocodo, () => {
-    PomocodoTimer.start;
+    PomocodoTimer.start();
   });
   let pause = vscode.commands.registerCommand(command.pausePomocodo, () => {
     PomocodoTimer.pause();

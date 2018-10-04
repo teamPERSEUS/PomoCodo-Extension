@@ -1,4 +1,4 @@
-exports.convertTime = function(milliseconds) {
+var convert = function (milliseconds) {
   let MILLISECONDS_IN_SECOND = 1000;
   let SECONDS_IN_MINUTE = 60;
 
@@ -15,3 +15,5 @@ exports.convertTime = function(milliseconds) {
 
   return minutes + ':' + seconds;
 };
+
+exports.convert = convert;

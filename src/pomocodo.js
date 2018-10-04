@@ -1,19 +1,14 @@
 const vsCode = require('vscode');
 const command = require('./command');
 const timerStates = require('./timerStates');
-const convertTime = require('./milliconvert');
+const convertTime = require('./convertTime');
 const defaultTime = 1500000; //25 minutes
 const MILLISECONDS_IN_SECOND = 1000;
 
-var Pomocodo = function(pomoInterval = defaultTime) {
+var Pomocodo = function (pomoInterval = defaultTime) {
   this.name = 'Pomocodo';
-  this.pomoInterval === defaultTime
-    ? vsCode.workspace
-        .getConfiguration('Pomocodo')
-        .get('interval', defaultTime) *
-      MILLISECONDS_IN_SECOND *
-      60
-    : pomoInterval;
+  this.pomoInterval = defaultTime
+
   this.milliSecRemaining = this.pomoInterval;
   this.timeout = 0;
   this.date = new Date();
@@ -28,26 +23,26 @@ var Pomocodo = function(pomoInterval = defaultTime) {
   this.updateStatusBar();
 };
 
-Pomocodo.prototype.updateStatusBar = function() {
+Pomocodo.prototype.updateStatusBar = function () {
   const button =
     timerStates.timerState.RUNNING === this.state
-      ? '${primitive-square}'
-      : '${clock}';
+      ? `$(primitive-square)`
+      : `$(clock)`;
   this.statusBarItem.text =
     button +
     ' ' +
-    convertTime.convertTime(this.milliSecRemaining) +
+    convertTime.convert(this.milliSecRemaining) +
     ' - ' +
     this.state;
 };
 
-Pomocodo.prototype.setState = function(state, statusCommand) {
+Pomocodo.prototype.setState = function (state, statusCommand) {
   this.state = state;
   this.statusBarItem.command = statusCommand;
   this.updateStatusBar();
 };
 
-Pomocodo.prototype.start = function() {
+Pomocodo.prototype.start = function () {
   if (!timerStates.startStates.has(this.state)) return false;
 
   let onExpired = () => {
@@ -73,7 +68,7 @@ Pomocodo.prototype.start = function() {
   return true;
 };
 
-Pomocodo.prototype.stop = function() {
+Pomocodo.prototype.stop = function () {
   if (!timerStates.stopStates.has(this.state)) return false;
 
   clearTimeout(this.timeout);
@@ -85,7 +80,7 @@ Pomocodo.prototype.stop = function() {
   this.setState(timerStates.timerState.FINISHED, command.startPomocodo);
 };
 
-Pomocodo.prototype.pause = function() {
+Pomocodo.prototype.pause = function () {
   if (!this.state === 'PAUSED') return false;
 
   clearTimeout(this.timeout);
@@ -94,13 +89,13 @@ Pomocodo.prototype.pause = function() {
   return true;
 };
 
-Pomocodo.prototype.restart = function() {
+Pomocodo.prototype.restart = function () {
   this.stop();
   this.milliSecRemaining = this.pomoInterval;
   this.setState(timerStates.timerState.READY, command.startPomocodo);
 };
 
-Pomocodo.prototype.dispose = function() {
+Pomocodo.prototype.dispose = function () {
   if (this.statusBarItem) {
     this.statusBarItem.hide();
     this.statusBarItem.dispose();
