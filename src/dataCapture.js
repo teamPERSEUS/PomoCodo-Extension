@@ -4,13 +4,15 @@ var DataCapture = function() {
 	this.pomoIntervalData = {};
 };
 
-DataCapture.prototype.update = function(document) {
-	if (this.pomoIntervalData[document] === undefined) {
-		this.pomoIntervalData[document] = 2;
+DataCapture.prototype.changeFile = function(file, time, state) {
+	console.log('file ' + file, 'time ' + time, 'state ' + state);
+	if (this.pomoIntervalData[file] === undefined) {
+		let objState = {};
+		objState[state] = time;
+		this.pomoIntervalData[file] = objState;
 	} else {
-		this.pomoIntervalData[document]++;
+		this.pomoIntervalData[file][state] += time;
 	}
-	console.log(this.pomoIntervalData);
 };
 
 exports.DataCapture = DataCapture;

@@ -5,6 +5,7 @@ const pomocodo = require('./pomocodo');
 const command = require('./command');
 const issues = require('./issues');
 const Uploader = require('./upload');
+const DataCapture = require('./dataCapture');
 const PomocodoTimer = new pomocodo.Pomocodo();
 const Issue = new issues.Issues();
 
@@ -29,9 +30,11 @@ function activate(context) {
 	let nextIssue = vsCode.commands.registerCommand(command.nextIssue, () => {
 		Issue.nextIssue();
 	});
-	let changeDoc = vsCode.window.onDidChangeActiveTextEditor(
-		e => (PomocodoTimer.activeFile = e.document.fileName)
-	);
+	let changeDoc = vsCode.window.onDidChangeActiveTextEditor(e => {
+		PomocodoTimer.commitDataOnFileChange();
+		PomocodoTimer.timeSpentonFile = 1;
+		PomocodoTimer.activeFile = e.document.fileName;
+	});
 	context.subscriptions.push([start, pause, reset, nextIssue, changeDoc]);
 }
 exports.activate = activate;

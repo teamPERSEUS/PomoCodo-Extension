@@ -2,15 +2,16 @@ const vsCode = require('vscode');
 const command = require('./command');
 const timerStates = require('./timerStates');
 const convertTime = require('./convertTime');
-const dataCapture = require('./dataCapture');
+const DataCapture = require('./dataCapture');
 const defaultTime = 5000; //25 minutes
-const defaultBreak = 1000;
+const defaultBreak = 3000;
 const longBreak = 6000;
 const MILLISECONDS_IN_SECOND = 1000;
 
 var Pomocodo = function(pomoInterval = defaultTime) {
 	this.name = 'Pomocodo';
-	this.data = new dataCapture.DataCapture();
+	this.data = new DataCapture.DataCapture();
+	this.timeSpentonFile = 1;
 	this.activeFile = vsCode.window.activeTextEditor.document.fileName;
 	this.pomoInterval = defaultTime;
 	this.completed = 0;
@@ -52,34 +53,32 @@ Pomocodo.prototype.setState = function(state, statusCommand) {
 
 Pomocodo.prototype.start = function() {
 	if (!timerStates.startStates.has(this.state)) return false;
+
 	let onExpired = () => {
+		this.break = !this.break;
 		this.restart();
-		vsCode.window
-			.showInformationMessage('Round completed! Make sure to take a break :)')
-			.then(next => {
-				if ('Restart' === next) {
-					this.restart();
-					this.start();
-				}
-			});
+		this.commitDataOnFileChange();
+		let message;
+		if (this.break) {
+			message = 'Round completed! Make sure to take a break :)';
+		} else {
+			message = 'next round, start!';
+		}
+		vsCode.window.showInformationMessage(message);
 	};
 	let secondsPassed = () => {
 		this.milliSecRemaining -= MILLISECONDS_IN_SECOND;
 		this.updateStatusBar();
+		// this.timeSpentonFile++;
 	};
-
-	// this.endDate = new Date(Date.now().valueOf() + this.milliSecRemaining);
-	// console.log(this.endDate);
-	// console.log(this.date);
 	this.timeout = setTimeout(onExpired, this.milliSecRemaining);
-	this.interval = setInterval(() => {
-		secondsPassed();
-		this.data.update(this.activeFile);
-	}, MILLISECONDS_IN_SECOND);
+	this.interval = setInterval(secondsPassed, MILLISECONDS_IN_SECOND);
 	if (this.break) {
+		console.log(this.break);
 		this.setState(timerStates.timerState.BREAK, command.pausePomocodo);
+	} else {
+		this.setState(timerStates.timerState.RUNNING, command.pausePomocodo);
 	}
-	this.setState(timerStates.timerState.RUNNING, command.pausePomocodo);
 	return true;
 };
 
@@ -96,7 +95,7 @@ Pomocodo.prototype.stop = function() {
 };
 
 Pomocodo.prototype.pause = function() {
-	if (!this.state === 'PAUSED') return false;
+	if (!timerStates.pauseStates.has(this.state)) return false;
 	clearTimeout(this.timeout);
 	clearInterval(this.interval);
 	this.setState(timerStates.timerState.PAUSED, command.startPomocodo);
@@ -104,7 +103,6 @@ Pomocodo.prototype.pause = function() {
 };
 
 Pomocodo.prototype.restart = function() {
-	this.break = !this.break;
 	if (this.break) {
 		this.stop();
 		if (this.completed > 0 && this.completed % 4 === 0) {
@@ -113,6 +111,8 @@ Pomocodo.prototype.restart = function() {
 			this.milliSecRemaining = defaultBreak;
 		}
 		this.setState(timerStates.timerState.BREAK, command.startPomocodo);
+		console.log(this.state);
+		this.start();
 	} else {
 		this.stop();
 		this.completed++;
@@ -120,6 +120,11 @@ Pomocodo.prototype.restart = function() {
 		this.setState(timerStates.timerState.READY, command.startPomocodo);
 		this.start();
 	}
+};
+
+Pomocodo.prototype.commitDataOnFileChange = function() {
+	this.data.changeFile(this.activeFile, this.timeSpentonFile, this.state);
+	this.timeSpentonFile = 1;
 };
 
 Pomocodo.prototype.dispose = function() {
