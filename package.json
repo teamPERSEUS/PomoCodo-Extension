@@ -41,6 +41,11 @@
         "command": "extension.resetPomocodo",
         "title": "Reset Timer",
         "category": "Pomodoro"
+      },
+      {
+        "command": "extension.nextIssue",
+        "title": "Select Next Issue",
+        "category": "Issues"
       }
     ]
   },

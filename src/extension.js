@@ -3,34 +3,39 @@
 const vscode = require('vscode');
 const pomocodo = require('./pomocodo');
 const command = require('./command');
-const PomocodoTimer = new pomocodo.Pomocodo();
+const issues = require('./issues');
 const Uploader = require('./upload');
+const PomocodoTimer = new pomocodo.Pomocodo();
+const Issue = new issues.Issues();
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 function activate(context) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "test" is now active!');
-  console.log(command.startPomocodo)
+	// Use the console to output diagnostic information (console.log) and errors (console.error)
+	// This line of code will only be executed once when your extension is activated
+	console.log('Congratulations, your extension "test" is now active!');
+	// console.log(context);
 
-  let start = vscode.commands.registerCommand(command.startPomocodo, () => {
-    PomocodoTimer.start();
-    Uploader.upload();
-  });
-  let pause = vscode.commands.registerCommand(command.pausePomocodo, () => {
-    PomocodoTimer.pause();
-  });
-  let reset = vscode.commands.registerCommand(command.resetPomocodo, () => {
-    PomocodoTimer.restart();
-  });
+	let start = vscode.commands.registerCommand(command.startPomocodo, () => {
+		PomocodoTimer.start();
+		Uploader.upload();
+	});
+	let pause = vscode.commands.registerCommand(command.pausePomocodo, () => {
+		PomocodoTimer.pause();
+	});
+	let reset = vscode.commands.registerCommand(command.resetPomocodo, () => {
+		PomocodoTimer.restart();
+	});
+	let nextIssue = vscode.commands.registerCommand(command.nextIssue, () => {
+		Issue.nextIssue();
+	});
 
-  context.subscriptions.push([start, pause, reset]);
+	context.subscriptions.push([start, pause, reset]);
 }
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
 function deactivate() {
-  PomocodoTimer.dispose();
+	PomocodoTimer.dispose();
 }
 exports.deactivate = deactivate;
