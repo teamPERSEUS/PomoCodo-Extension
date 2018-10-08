@@ -14,6 +14,7 @@ var Issues = function() {
 		}
 	];
 	this.state = 0;
+	this.currentIssue = this.issues[this.state];
 	this.issuesIndex = this.issues.length - 1;
 	this.statusBarItem = vsCode.window.createStatusBarItem(
 		vsCode.StatusBarAlignment.left
@@ -24,8 +25,8 @@ var Issues = function() {
 };
 
 Issues.prototype.updateStatusBar = function() {
-	let item = this.issues[this.state];
-	this.statusBarItem.text = item.IssueName + ' - ' + item.plan + ' hours';
+	this.statusBarItem.text =
+		this.currentIssue.IssueName + ' - ' + this.currentIssue.plan + ' hours';
 };
 
 Issues.prototype.nextIssue = function() {

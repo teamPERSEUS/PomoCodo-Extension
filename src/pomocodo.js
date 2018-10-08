@@ -2,22 +2,28 @@ const vsCode = require('vscode');
 const command = require('./command');
 const timerStates = require('./timerStates');
 const convertTime = require('./convertTime');
+const dataCapture = require('./dataCapture');
 const defaultTime = 5000; //25 minutes
+const defaultBreak = 1000;
+const longBreak = 6000;
 const MILLISECONDS_IN_SECOND = 1000;
 
 var Pomocodo = function(pomoInterval = defaultTime) {
 	this.name = 'Pomocodo';
+	this.data = new dataCapture.DataCapture();
 	this.pomoInterval = defaultTime;
-
+	this.completed = 0;
 	this.milliSecRemaining = this.pomoInterval;
 	this.timeout = 0;
 	this.date = new Date();
 	this.interval = 0;
+	this.break = false;
 	this.state = timerStates.timerState.READY;
 	this.statusBarItem = vsCode.window.createStatusBarItem(
 		vsCode.StatusBarAlignment.Left,
 		Number.MAX_SAFE_INTEGER
 	);
+	this.document = 'test.doc';
 	this.statusBarItem.command = command.startPomocodo;
 	this.statusBarItem.show();
 	this.updateStatusBar();
@@ -33,7 +39,9 @@ Pomocodo.prototype.updateStatusBar = function() {
 		' ' +
 		convertTime.convert(this.milliSecRemaining) +
 		' - ' +
-		this.state;
+		this.state +
+		'  rounds completed : ' +
+		this.completed;
 };
 
 Pomocodo.prototype.setState = function(state, statusCommand) {
@@ -43,7 +51,6 @@ Pomocodo.prototype.setState = function(state, statusCommand) {
 };
 
 Pomocodo.prototype.start = function() {
-	console.log(vsCode.window.activeTextEditor.document.fileName);
 	if (!timerStates.startStates.has(this.state)) return false;
 	let onExpired = () => {
 		this.restart();
@@ -61,9 +68,17 @@ Pomocodo.prototype.start = function() {
 		this.updateStatusBar();
 	};
 
-	this.endDate = new Date(Date.now().valueOf() + this.milliSecRemaining);
+	// this.endDate = new Date(Date.now().valueOf() + this.milliSecRemaining);
+	// console.log(this.endDate);
+	// console.log(this.date);
 	this.timeout = setTimeout(onExpired, this.milliSecRemaining);
-	this.interval = setInterval(secondsPassed, MILLISECONDS_IN_SECOND);
+	this.interval = setInterval(() => {
+		secondsPassed();
+		this.data.update(1);
+	}, MILLISECONDS_IN_SECOND);
+	if (this.break) {
+		this.setState(timerStates.timerState.BREAK, command.pausePomocodo);
+	}
 	this.setState(timerStates.timerState.RUNNING, command.pausePomocodo);
 	return true;
 };
@@ -82,7 +97,6 @@ Pomocodo.prototype.stop = function() {
 
 Pomocodo.prototype.pause = function() {
 	if (!this.state === 'PAUSED') return false;
-
 	clearTimeout(this.timeout);
 	clearInterval(this.interval);
 	this.setState(timerStates.timerState.PAUSED, command.startPomocodo);
@@ -90,9 +104,22 @@ Pomocodo.prototype.pause = function() {
 };
 
 Pomocodo.prototype.restart = function() {
-	this.stop();
-	this.milliSecRemaining = this.pomoInterval;
-	this.setState(timerStates.timerState.READY, command.startPomocodo);
+	this.break = !this.break;
+	if (this.break) {
+		this.stop();
+		if (this.completed > 0 && this.completed % 4 === 0) {
+			this.milliSecRemaining = longBreak;
+		} else {
+			this.milliSecRemaining = defaultBreak;
+		}
+		this.setState(timerStates.timerState.BREAK, command.startPomocodo);
+	} else {
+		this.stop();
+		this.completed++;
+		this.milliSecRemaining = this.pomoInterval;
+		this.setState(timerStates.timerState.READY, command.startPomocodo);
+		this.start();
+	}
 };
 
 Pomocodo.prototype.dispose = function() {

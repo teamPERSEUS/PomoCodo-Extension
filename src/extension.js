@@ -15,7 +15,7 @@ function activate(context) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "test" is now active!');
 	// console.log(context);
-
+	let dataCapture = false;
 	let start = vscode.commands.registerCommand(command.startPomocodo, () => {
 		PomocodoTimer.start();
 		Uploader.upload();
@@ -30,12 +30,15 @@ function activate(context) {
 		Issue.nextIssue();
 	});
 
-	context.subscriptions.push([start, pause, reset]);
+	context.subscriptions.push([start, pause, reset, nextIssue]);
 }
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
 function deactivate() {
 	PomocodoTimer.dispose();
+	Issue.dispose();
 }
 exports.deactivate = deactivate;
+exports.Issue = Issue;
+exports.PomocodoTimer = PomocodoTimer;
