@@ -1,6 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-const vscode = require('vscode');
+const vsCode = require('vscode');
 const pomocodo = require('./pomocodo');
 const command = require('./command');
 const issues = require('./issues');
@@ -16,21 +16,23 @@ function activate(context) {
 	console.log('Congratulations, your extension "test" is now active!');
 	// console.log(context);
 	let dataCapture = false;
-	let start = vscode.commands.registerCommand(command.startPomocodo, () => {
+	let start = vsCode.commands.registerCommand(command.startPomocodo, () => {
 		PomocodoTimer.start();
 		Uploader.upload();
 	});
-	let pause = vscode.commands.registerCommand(command.pausePomocodo, () => {
+	let pause = vsCode.commands.registerCommand(command.pausePomocodo, () => {
 		PomocodoTimer.pause();
 	});
-	let reset = vscode.commands.registerCommand(command.resetPomocodo, () => {
+	let reset = vsCode.commands.registerCommand(command.resetPomocodo, () => {
 		PomocodoTimer.restart();
 	});
-	let nextIssue = vscode.commands.registerCommand(command.nextIssue, () => {
+	let nextIssue = vsCode.commands.registerCommand(command.nextIssue, () => {
 		Issue.nextIssue();
 	});
-
-	context.subscriptions.push([start, pause, reset, nextIssue]);
+	let changeDoc = vsCode.window.onDidChangeActiveTextEditor(
+		e => (PomocodoTimer.activeFile = e.document.fileName)
+	);
+	context.subscriptions.push([start, pause, reset, nextIssue, changeDoc]);
 }
 exports.activate = activate;
 

@@ -10,7 +10,7 @@ DataCapture.prototype.update = function(document) {
 	} else {
 		this.pomoIntervalData[document]++;
 	}
-	console.log(this.pomoIntervalData[document]);
+	console.log(this.pomoIntervalData);
 };
 
 exports.DataCapture = DataCapture;

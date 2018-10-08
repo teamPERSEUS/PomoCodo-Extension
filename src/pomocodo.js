@@ -11,6 +11,7 @@ const MILLISECONDS_IN_SECOND = 1000;
 var Pomocodo = function(pomoInterval = defaultTime) {
 	this.name = 'Pomocodo';
 	this.data = new dataCapture.DataCapture();
+	this.activeFile = vsCode.window.activeTextEditor.document.fileName;
 	this.pomoInterval = defaultTime;
 	this.completed = 0;
 	this.milliSecRemaining = this.pomoInterval;
@@ -23,7 +24,6 @@ var Pomocodo = function(pomoInterval = defaultTime) {
 		vsCode.StatusBarAlignment.Left,
 		Number.MAX_SAFE_INTEGER
 	);
-	this.document = 'test.doc';
 	this.statusBarItem.command = command.startPomocodo;
 	this.statusBarItem.show();
 	this.updateStatusBar();
@@ -74,7 +74,7 @@ Pomocodo.prototype.start = function() {
 	this.timeout = setTimeout(onExpired, this.milliSecRemaining);
 	this.interval = setInterval(() => {
 		secondsPassed();
-		this.data.update(1);
+		this.data.update(this.activeFile);
 	}, MILLISECONDS_IN_SECOND);
 	if (this.break) {
 		this.setState(timerStates.timerState.BREAK, command.pausePomocodo);
