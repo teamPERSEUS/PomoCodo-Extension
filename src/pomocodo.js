@@ -3,8 +3,8 @@ const command = require('./command');
 const timerStates = require('./timerStates');
 const convertTime = require('./convertTime');
 const DataCapture = require('./dataCapture');
-const defaultTime = 5000; //25 minutes
-const defaultBreak = 3000;
+const defaultTime = 2000; //25 minutes
+const defaultBreak = 1000;
 const longBreak = 6000;
 const MILLISECONDS_IN_SECOND = 1000;
 
@@ -55,9 +55,12 @@ Pomocodo.prototype.start = function() {
 	if (!timerStates.startStates.has(this.state)) return false;
 
 	let onExpired = () => {
+		let file = this.activeFile;
+		let time = this.timeSpentonFile;
+		let state = this.state;
 		this.break = !this.break;
 		this.restart();
-		this.commitDataOnFileChange();
+		this.commitDataOnFileChange(file, time, state);
 		let message;
 		if (this.break) {
 			message = 'Round completed! Make sure to take a break :)';
@@ -69,12 +72,12 @@ Pomocodo.prototype.start = function() {
 	let secondsPassed = () => {
 		this.milliSecRemaining -= MILLISECONDS_IN_SECOND;
 		this.updateStatusBar();
-		// this.timeSpentonFile++;
+		this.timeSpentonFile++;
 	};
+	this.timeSpentonFile = 1;
 	this.timeout = setTimeout(onExpired, this.milliSecRemaining);
 	this.interval = setInterval(secondsPassed, MILLISECONDS_IN_SECOND);
 	if (this.break) {
-		console.log(this.break);
 		this.setState(timerStates.timerState.BREAK, command.pausePomocodo);
 	} else {
 		this.setState(timerStates.timerState.RUNNING, command.pausePomocodo);
@@ -111,7 +114,6 @@ Pomocodo.prototype.restart = function() {
 			this.milliSecRemaining = defaultBreak;
 		}
 		this.setState(timerStates.timerState.BREAK, command.startPomocodo);
-		console.log(this.state);
 		this.start();
 	} else {
 		this.stop();
@@ -122,9 +124,8 @@ Pomocodo.prototype.restart = function() {
 	}
 };
 
-Pomocodo.prototype.commitDataOnFileChange = function() {
-	this.data.changeFile(this.activeFile, this.timeSpentonFile, this.state);
-	this.timeSpentonFile = 1;
+Pomocodo.prototype.commitDataOnFileChange = function(file, time, state) {
+	this.data.changeFile(file, time, state);
 };
 
 Pomocodo.prototype.dispose = function() {
