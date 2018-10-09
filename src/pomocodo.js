@@ -3,6 +3,7 @@ const command = require('./command');
 const timerStates = require('./timerStates');
 const convertTime = require('./convertTime');
 const DataCapture = require('./dataCapture');
+const issues = require('./issues');
 const defaultTime = 2000; //25 minutes
 const defaultBreak = 1000;
 const longBreak = 6000;
@@ -13,6 +14,7 @@ var Pomocodo = function(pomoInterval = defaultTime) {
 	this.data = new DataCapture.DataCapture();
 	this.timeSpentonFile = 1;
 	this.activeFile = vsCode.window.activeTextEditor.document.fileName;
+	this.issue = new issues.Issues();
 	this.pomoInterval = defaultTime;
 	this.completed = 0;
 	this.milliSecRemaining = this.pomoInterval;
@@ -58,9 +60,10 @@ Pomocodo.prototype.start = function() {
 		let file = this.activeFile;
 		let time = this.timeSpentonFile;
 		let state = this.state;
+		let issue = this.issue.currentIssue.IssueName;
 		this.break = !this.break;
 		this.restart();
-		this.commitDataOnFileChange(file, time, state);
+		this.commitDataOnFileChange(file, time, state, issue);
 		let message;
 		if (this.break) {
 			message = 'Round completed! Make sure to take a break :)';
@@ -124,8 +127,8 @@ Pomocodo.prototype.restart = function() {
 	}
 };
 
-Pomocodo.prototype.commitDataOnFileChange = function(file, time, state) {
-	this.data.changeFile(file, time, state);
+Pomocodo.prototype.commitDataOnFileChange = function(file, time, state, issue) {
+	this.data.changeFile(file, time, state, issue);
 };
 
 Pomocodo.prototype.dispose = function() {

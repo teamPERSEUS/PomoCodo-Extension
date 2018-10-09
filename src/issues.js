@@ -14,6 +14,7 @@ var Issues = function() {
 		}
 	];
 	this.state = 0;
+	this.currentIssue = this.issues[this.state];
 	this.issuesIndex = this.issues.length - 1;
 	this.statusBarItem = vsCode.window.createStatusBarItem(
 		vsCode.StatusBarAlignment.left
@@ -25,10 +26,7 @@ var Issues = function() {
 
 Issues.prototype.updateStatusBar = function() {
 	this.statusBarItem.text =
-		this.issues[this.state].IssueName +
-		' - ' +
-		this.issues[this.state].plan +
-		' hours';
+		this.currentIssue.IssueName + ' - ' + this.currentIssue.plan + ' hours';
 };
 
 Issues.prototype.nextIssue = function() {
@@ -37,9 +35,7 @@ Issues.prototype.nextIssue = function() {
 	} else {
 		this.state++;
 	}
-
-	console.log(this.state);
-	console.log(this.issues[this.state]);
+	this.currentIssue = this.issues[this.state];
 	this.updateStatusBar();
 };
 

@@ -3,11 +3,8 @@
 const vsCode = require('vscode');
 const pomocodo = require('./pomocodo');
 const command = require('./command');
-const issues = require('./issues');
 const Uploader = require('./upload');
-const DataCapture = require('./dataCapture');
 const PomocodoTimer = new pomocodo.Pomocodo();
-const Issue = new issues.Issues();
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -28,7 +25,7 @@ function activate(context) {
 		PomocodoTimer.restart();
 	});
 	let nextIssue = vsCode.commands.registerCommand(command.nextIssue, () => {
-		Issue.nextIssue();
+		PomocodoTimer.issue.nextIssue();
 	});
 	let changeDoc = vsCode.window.onDidChangeActiveTextEditor(e => {
 		PomocodoTimer.commitDataOnFileChange();
@@ -45,5 +42,4 @@ function deactivate() {
 	Issue.dispose();
 }
 exports.deactivate = deactivate;
-exports.Issue = Issue;
 exports.PomocodoTimer = PomocodoTimer;
