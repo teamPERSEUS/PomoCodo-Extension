@@ -3,11 +3,13 @@ const command = require('./command');
 const timerStates = require('./timerStates');
 const convertTime = require('./convertTime');
 const DataCapture = require('./dataCapture');
+const sendData = require('./upload');
 const issues = require('./issues');
 const defaultTime = 2000; //25 minutes
 const defaultBreak = 1000;
 const longBreak = 6000;
 const MILLISECONDS_IN_SECOND = 1000;
+const wordCount = 10;
 
 var Pomocodo = function(pomoInterval = defaultTime) {
 	this.name = 'Pomocodo';
@@ -121,6 +123,7 @@ Pomocodo.prototype.restart = function() {
 	} else {
 		this.stop();
 		this.completed++;
+		sendData.upload(this.completed, this.data.pomoIntervalData);
 		this.milliSecRemaining = this.pomoInterval;
 		this.setState(timerStates.timerState.READY, command.startPomocodo);
 		this.start();
@@ -128,7 +131,7 @@ Pomocodo.prototype.restart = function() {
 };
 
 Pomocodo.prototype.commitDataOnFileChange = function(file, time, state, issue) {
-	this.data.changeFile(file, time, state, issue);
+	this.data.changeFile(file, time, state, issue, wordCount);
 };
 
 Pomocodo.prototype.dispose = function() {

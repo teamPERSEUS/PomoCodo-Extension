@@ -3,7 +3,6 @@
 const vsCode = require('vscode');
 const pomocodo = require('./pomocodo');
 const command = require('./command');
-const Uploader = require('./upload');
 const PomocodoTimer = new pomocodo.Pomocodo();
 
 // this method is called when your extension is activated
@@ -16,7 +15,6 @@ function activate(context) {
 	let dataCapture = false;
 	let start = vsCode.commands.registerCommand(command.startPomocodo, () => {
 		PomocodoTimer.start();
-		Uploader.upload();
 	});
 	let pause = vsCode.commands.registerCommand(command.pausePomocodo, () => {
 		PomocodoTimer.pause();

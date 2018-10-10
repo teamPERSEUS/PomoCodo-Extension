@@ -1,13 +1,14 @@
 let request = require('request');
 
-var upload = function() {
-	request('http://localhost:1337/vsCode', {
+var upload = function(interval, data) {
+	request('http://localhost:4001/interval', {
 		method: 'POST',
-		form: { data: 'THIS DATA IS FROM THE VSCODE EXTENSION :)' },
+		body: JSON.stringify({ interval: interval, data: data }),
 		headers: {
-			'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+			'Content-Type': 'application/json'
 		}
 	});
+	console.log(data);
 };
 
 exports.upload = upload;
