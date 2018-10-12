@@ -19,9 +19,9 @@ class Pomocodo {
 		this.completed = 0;
 		this.activeFile = vsCode.window.activeTextEditor.document.fileName;
 		this.timeSpent = 1;
-		this.pomoInterval = 10000;
-		this.shortBreak = 8000;
-		this.longBreak = 3000;
+		this.pomoInterval = 5000;
+		this.shortBreak = 4000;
+		this.longBreak = 2000;
 		this.remainingTime = this.pomoInterval;
 		this.timeout = 0;
 		this.interval = 0;
@@ -77,7 +77,7 @@ class Pomocodo {
 			this.timeSpent = 0;
 			this.restart();
 		};
-		if (this.state === 'Ready') {
+		if (this.state === 'Ready' || this.state === 'Paused') {
 			this.updateState('Running', pausePomocodo);
 		}
 		this.timeout = setTimeout(timesUp, this.remainingTime);
@@ -85,11 +85,14 @@ class Pomocodo {
 	}
 
 	restart() {
+		if (this.state === 'Break') {
+			this.data.pomoIntervalData = {};
+		}
 		this.state === 'Running'
 			? (this.updateState('Break', pausePomocodo),
-			  (this.remainingTime = this.pomoInterval))
+			  (this.remainingTime = this.shortBreak))
 			: (this.updateState('Running', pausePomocodo),
-			  (this.remainingTime = this.shortBreak),
+			  (this.remainingTime = this.pomoInterval),
 			  this.completed++);
 
 		this.startTimer();
