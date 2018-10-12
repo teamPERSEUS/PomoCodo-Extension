@@ -67,13 +67,7 @@ class Pomocodo {
 			this.timeout = 0;
 			this.interval = 0;
 			this.remainingTime = 0;
-			this.data.captureData(
-				this.issue.currentIssue.IssueName,
-				this.activeFile,
-				this.state,
-				this.timeSpent,
-				10
-			);
+			this.captureData();
 			this.timeSpent = 0;
 			this.restart();
 		};
@@ -104,9 +98,7 @@ class Pomocodo {
 		this.updateState('Paused', startPomocodo);
 	}
 
-	changeIssue() {
-		clearTimeout(this.timeout);
-		clearInterval(this.interval);
+	captureData() {
 		this.data.captureData(
 			this.issue.currentIssue.IssueName,
 			this.activeFile,
@@ -114,6 +106,12 @@ class Pomocodo {
 			this.timeSpent,
 			10
 		);
+	}
+
+	changeIssue() {
+		clearTimeout(this.timeout);
+		clearInterval(this.interval);
+		this.captureData();
 		this.timeSpent = 0;
 		this.startTimer();
 	}
