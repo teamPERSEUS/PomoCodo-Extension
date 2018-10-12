@@ -13,7 +13,10 @@ const oneSecond = 1000;
 const wordCount = 10;
 
 class Pomocodo {
-	constructor() {
+	constructor(gitUserId, gitRepo) {
+		this.userId = gitUserId;
+		this.gitRepo = gitRepo;
+		console.log(this.userId, this.gitRepo);
 		this.data = new DataCapture();
 		this.issue = new Issues();
 		this.completed = 0;
@@ -80,14 +83,15 @@ class Pomocodo {
 
 	restart() {
 		if (this.state === 'Break') {
+			this.completed++;
+			upload(this.completed, this.data.pomoIntervalData);
 			this.data.pomoIntervalData = {};
 		}
 		this.state === 'Running'
 			? (this.updateState('Break', pausePomocodo),
 			  (this.remainingTime = this.shortBreak))
 			: (this.updateState('Running', pausePomocodo),
-			  (this.remainingTime = this.pomoInterval),
-			  this.completed++);
+			  (this.remainingTime = this.pomoInterval));
 
 		this.startTimer();
 	}

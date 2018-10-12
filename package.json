@@ -11,7 +11,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "workspaceContains:.git"
   ],
   "main": "./src/extension",
   "contributes": {
@@ -27,6 +27,11 @@
       }
     },
     "commands": [
+      {
+        "command": "extension.startApp",
+        "title": "Start Application",
+        "category": "Pomodoro"
+      },
       {
         "command": "extension.startPomocodo",
         "title": "Start Timer",
@@ -59,5 +64,10 @@
     "eslint": "^4.11.0",
     "@types/node": "^8.10.25",
     "@types/mocha": "^2.2.42"
+  },
+  "dependencies": {
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "request-promise-native": "^1.0.5"
   }
 }
