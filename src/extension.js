@@ -14,7 +14,7 @@ function activate(context) {
 	// console.log(context);
 	let dataCapture = false;
 	let start = vsCode.commands.registerCommand(command.startPomocodo, () => {
-		PomocodoTimer.start();
+		PomocodoTimer.startTimer();
 	});
 	let pause = vsCode.commands.registerCommand(command.pausePomocodo, () => {
 		PomocodoTimer.pause();
@@ -23,6 +23,7 @@ function activate(context) {
 		PomocodoTimer.restart();
 	});
 	let nextIssue = vsCode.commands.registerCommand(command.nextIssue, () => {
+		PomocodoTimer.changeIssue();
 		PomocodoTimer.issue.nextIssue();
 	});
 	let changeDoc = vsCode.window.onDidChangeActiveTextEditor(e => {
@@ -32,6 +33,7 @@ function activate(context) {
 	});
 	context.subscriptions.push([start, pause, reset, nextIssue, changeDoc]);
 }
+
 exports.activate = activate;
 
 // this method is called when your extension is deactivated

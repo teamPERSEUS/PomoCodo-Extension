@@ -1,146 +1,126 @@
 const vsCode = require('vscode');
-const command = require('./command');
-const timerStates = require('./timerStates');
-const convertTime = require('./convertTime');
-const DataCapture = require('./dataCapture');
-const sendData = require('./upload');
-const issues = require('./issues');
-const defaultTime = 2000; //25 minutes
-const defaultBreak = 1000;
-const longBreak = 6000;
-const MILLISECONDS_IN_SECOND = 1000;
+const {
+	startPomocodo,
+	pausePomocodo,
+	resetPomocodo,
+	nextIssue
+} = require('./command');
+const { convert } = require('./convertTime');
+const { DataCapture } = require('./dataCapture');
+const { upload } = require('./upload');
+const { Issues } = require('./issues');
+const oneSecond = 1000;
 const wordCount = 10;
 
-var Pomocodo = function(pomoInterval = defaultTime) {
-	this.name = 'Pomocodo';
-	this.data = new DataCapture.DataCapture();
-	this.timeSpentonFile = 1;
-	this.activeFile = vsCode.window.activeTextEditor.document.fileName;
-	this.issue = new issues.Issues();
-	this.pomoInterval = defaultTime;
-	this.completed = 0;
-	this.milliSecRemaining = this.pomoInterval;
-	this.timeout = 0;
-	this.date = new Date();
-	this.interval = 0;
-	this.break = false;
-	this.state = timerStates.timerState.READY;
-	this.statusBarItem = vsCode.window.createStatusBarItem(
-		vsCode.StatusBarAlignment.Left,
-		Number.MAX_SAFE_INTEGER
-	);
-	this.statusBarItem.command = command.startPomocodo;
-	this.statusBarItem.show();
-	this.updateStatusBar();
-};
-
-Pomocodo.prototype.updateStatusBar = function() {
-	const button =
-		timerStates.timerState.RUNNING === this.state
-			? `$(primitive-square)`
-			: `$(clock)`;
-	this.statusBarItem.text =
-		button +
-		' ' +
-		convertTime.convert(this.milliSecRemaining) +
-		' - ' +
-		this.state +
-		'  rounds completed : ' +
-		this.completed;
-};
-
-Pomocodo.prototype.setState = function(state, statusCommand) {
-	this.state = state;
-	this.statusBarItem.command = statusCommand;
-	this.updateStatusBar();
-};
-
-Pomocodo.prototype.start = function() {
-	if (!timerStates.startStates.has(this.state)) return false;
-
-	let onExpired = () => {
-		let file = this.activeFile;
-		let time = this.timeSpentonFile;
-		let state = this.state;
-		let issue = this.issue.currentIssue.IssueName;
-		this.break = !this.break;
-		this.restart();
-		this.commitDataOnFileChange(file, time, state, issue);
-		let message;
-		if (this.break) {
-			message = 'Round completed! Make sure to take a break :)';
-		} else {
-			message = 'next round, start!';
-		}
-		vsCode.window.showInformationMessage(message);
-	};
-	let secondsPassed = () => {
-		this.milliSecRemaining -= MILLISECONDS_IN_SECOND;
+class Pomocodo {
+	constructor() {
+		this.data = new DataCapture();
+		this.issue = new Issues();
+		this.completed = 0;
+		this.activeFile = vsCode.window.activeTextEditor.document.fileName;
+		this.timeSpent = 1;
+		this.pomoInterval = 10000;
+		this.shortBreak = 8000;
+		this.longBreak = 3000;
+		this.remainingTime = this.pomoInterval;
+		this.timeout = 0;
+		this.interval = 0;
+		this.state = 'Ready';
+		this.statusBarItem = vsCode.window.createStatusBarItem(
+			vsCode.StatusBarAlignment.Left,
+			Number.MAX_SAFE_INTEGER
+		);
+		this.statusBarItem.command = startPomocodo;
+		this.statusBarItem.show();
 		this.updateStatusBar();
-		this.timeSpentonFile++;
-	};
-	this.timeSpentonFile = 1;
-	this.timeout = setTimeout(onExpired, this.milliSecRemaining);
-	this.interval = setInterval(secondsPassed, MILLISECONDS_IN_SECOND);
-	if (this.break) {
-		this.setState(timerStates.timerState.BREAK, command.pausePomocodo);
-	} else {
-		this.setState(timerStates.timerState.RUNNING, command.pausePomocodo);
 	}
-	return true;
-};
+	updateStatusBar() {
+		const button =
+			this.state === 'Ready' || this.state === 'Paused'
+				? `$(triangle-right)`
+				: `$(clock)`;
+		this.statusBarItem.text =
+			button +
+			' ' +
+			convert(this.remainingTime) +
+			' ' +
+			this.state +
+			'   Intervals completed : ' +
+			this.completed;
+	}
 
-Pomocodo.prototype.stop = function() {
-	if (!timerStates.stopStates.has(this.state)) return false;
+	updateState(state, command) {
+		this.state = state;
+		this.statusBarItem.command = command;
+		this.updateStatusBar();
+	}
 
-	clearTimeout(this.timeout);
-	clearInterval(this.interval);
-
-	this.timeout = 0;
-	this.interval = 0;
-	this.milliSecRemaining = 0;
-	this.setState(timerStates.timerState.FINISHED, command.startPomocodo);
-};
-
-Pomocodo.prototype.pause = function() {
-	if (!timerStates.pauseStates.has(this.state)) return false;
-	clearTimeout(this.timeout);
-	clearInterval(this.interval);
-	this.setState(timerStates.timerState.PAUSED, command.startPomocodo);
-	return true;
-};
-
-Pomocodo.prototype.restart = function() {
-	if (this.break) {
-		this.stop();
-		if (this.completed > 0 && this.completed % 4 === 0) {
-			this.milliSecRemaining = longBreak;
-		} else {
-			this.milliSecRemaining = defaultBreak;
+	startTimer() {
+		let secondPassed = () => {
+			this.remainingTime -= oneSecond;
+			this.updateStatusBar();
+			this.timeSpent++;
+		};
+		let timesUp = () => {
+			clearTimeout(this.timeout);
+			clearInterval(this.interval);
+			this.timeout = 0;
+			this.interval = 0;
+			this.remainingTime = 0;
+			this.data.captureData(
+				this.issue.currentIssue.IssueName,
+				this.activeFile,
+				this.state,
+				this.timeSpent,
+				10
+			);
+			this.timeSpent = 0;
+			this.restart();
+		};
+		if (this.state === 'Ready') {
+			this.updateState('Running', pausePomocodo);
 		}
-		this.setState(timerStates.timerState.BREAK, command.startPomocodo);
-		this.start();
-	} else {
-		this.stop();
-		this.completed++;
-		sendData.upload(this.completed, this.data.pomoIntervalData);
-		this.milliSecRemaining = this.pomoInterval;
-		this.setState(timerStates.timerState.READY, command.startPomocodo);
-		this.start();
+		this.timeout = setTimeout(timesUp, this.remainingTime);
+		this.interval = setInterval(secondPassed, oneSecond);
 	}
-};
 
-Pomocodo.prototype.commitDataOnFileChange = function(file, time, state, issue) {
-	this.data.changeFile(file, time, state, issue, wordCount);
-};
+	restart() {
+		this.state === 'Running'
+			? (this.updateState('Break', pausePomocodo),
+			  (this.remainingTime = this.pomoInterval))
+			: (this.updateState('Running', pausePomocodo),
+			  (this.remainingTime = this.shortBreak),
+			  this.completed++);
 
-Pomocodo.prototype.dispose = function() {
-	if (this.statusBarItem) {
-		this.statusBarItem.hide();
-		this.statusBarItem.dispose();
-		this.statusBaritem = null;
+		this.startTimer();
 	}
-	this.state = timerStates.timerState.DISPOSED;
-};
+
+	pause() {
+		clearTimeout(this.timeout);
+		clearInterval(this.interval);
+		this.updateState('Paused', startPomocodo);
+	}
+
+	changeIssue() {
+		clearTimeout(this.timeout);
+		clearInterval(this.interval);
+		this.data.captureData(
+			this.issue.currentIssue.IssueName,
+			this.activeFile,
+			this.state,
+			this.timeSpent,
+			10
+		);
+		this.timeSpent = 0;
+		this.startTimer();
+	}
+	dispose() {
+		if (this.statusBarItem) {
+			this.statusBarItem.hide();
+			this.statusBarItem.dispose();
+			this.statusBaritem = null;
+		}
+	}
+}
 
 exports.Pomocodo = Pomocodo;

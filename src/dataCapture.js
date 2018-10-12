@@ -4,27 +4,32 @@ var DataCapture = function() {
 	this.pomoIntervalData = {};
 };
 
-DataCapture.prototype.changeFile = function(
-	file,
-	time,
-	state,
+DataCapture.prototype.captureData = function(
 	issue,
+	file,
+	state,
+	time,
 	wordCount
 ) {
 	if (
 		this.pomoIntervalData[issue] === undefined ||
-		this.pomoIntervalData[issue][file] === undefined
+		this.pomoIntervalData[issue][file] === undefined ||
+		this.pomoIntervalData[issue][file][state] === undefined
 	) {
-		let stateObj = {};
-		stateObj[state] = {
-			time: time,
-			wordCount: wordCount
-		};
-
 		if (this.pomoIntervalData[issue] === undefined) {
 			this.pomoIntervalData[issue] = {};
 		}
-		this.pomoIntervalData[issue][file] = stateObj;
+		if (this.pomoIntervalData[issue][file] === undefined) {
+			this.pomoIntervalData[issue][file] = {};
+		}
+		if (this.pomoIntervalData[issue][file][state] === undefined) {
+			this.pomoIntervalData[issue][file][state] = {};
+		}
+		let stateObj = {
+			time: time,
+			wordCount: wordCount
+		};
+		this.pomoIntervalData[issue][file][state] = stateObj;
 	} else {
 		let stateTime = this.pomoIntervalData[issue][file][state].time;
 		this.pomoIntervalData[issue][file][state].time =
@@ -33,17 +38,7 @@ DataCapture.prototype.changeFile = function(
 		this.pomoIntervalData[issue][file][state].wordCount =
 			stateWordCount === undefined ? wordCount : (stateWordCount += wordCount);
 	}
-
-	// if (this.pomoIntervalData[file] === undefined) {
-	// 	let objState = {};
-	// 	objState[state] = time;
-	// 	this.pomoIntervalData[file] = objState;
-	// } else {
-	// 	this.pomoIntervalData[file][state] =
-	// 		this.pomoIntervalData[file][state] === undefined
-	// 			? time
-	// 			: (this.pomoIntervalData[file][state] += time);
-	// }
+	console.log(this.pomoIntervalData);
 };
 
 exports.DataCapture = DataCapture;
