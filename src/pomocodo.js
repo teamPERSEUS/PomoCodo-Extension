@@ -1,10 +1,5 @@
 const vsCode = require('vscode');
-const {
-	startPomocodo,
-	pausePomocodo,
-	resetPomocodo,
-	nextIssue
-} = require('./command');
+const { startPomocodo, pausePomocodo, resetPomocodo } = require('./command');
 const { convert } = require('./convertTime');
 const { DataCapture } = require('./dataCapture');
 const { upload } = require('./upload');
@@ -13,17 +8,20 @@ const oneSecond = 1000;
 const wordCount = 10;
 
 class Pomocodo {
-	constructor(gitUserId, gitRepo) {
+	constructor(gitUserId, gitRepo, newIssues, gitID) {
+		this.gitId = gitID;
 		this.userId = gitUserId;
-		this.gitRepo = gitRepo;
-		console.log(this.userId, this.gitRepo);
+		this.gitRepoUrl = gitRepo;
 		this.data = new DataCapture();
-		this.issue = new Issues();
+		this.issue = new Issues(newIssues);
 		this.completed = 0;
-		this.activeFile = vsCode.window.activeTextEditor.document.fileName;
+		this.activeFile =
+			vsCode.window.activeTextEditor === undefined
+				? null
+				: vsCode.window.activeTextEditor.document.fileName;
 		this.timeSpent = 1;
-		this.pomoInterval = 5000;
-		this.shortBreak = 4000;
+		this.pomoInterval = 3000;
+		this.shortBreak = 2000;
 		this.longBreak = 2000;
 		this.remainingTime = this.pomoInterval;
 		this.timeout = 0;
@@ -84,7 +82,13 @@ class Pomocodo {
 	restart() {
 		if (this.state === 'Break') {
 			this.completed++;
-			upload(this.completed, this.data.pomoIntervalData);
+			upload(
+				this.completed,
+				this.data.pomoIntervalData,
+				this.gitId,
+				this.userId,
+				this.gitRepoUrl
+			);
 			this.data.pomoIntervalData = {};
 		}
 		this.state === 'Running'
@@ -103,21 +107,22 @@ class Pomocodo {
 	}
 
 	captureData() {
-		this.data.captureData(
-			this.issue.currentIssue.IssueName,
-			this.activeFile,
-			this.state,
-			this.timeSpent,
-			10
-		);
+		if (this.state != 'Ready')
+			this.data.captureData(
+				this.issue.currentIssue.title,
+				this.activeFile,
+				this.state,
+				this.timeSpent,
+				10
+			);
 	}
 
 	changeIssue() {
 		clearTimeout(this.timeout);
 		clearInterval(this.interval);
-		this.captureData();
+
+		if (this.state !== 'Ready') this.captureData();
 		this.timeSpent = 0;
-		this.startTimer();
 	}
 	dispose() {
 		if (this.statusBarItem) {

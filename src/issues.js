@@ -1,32 +1,27 @@
 const vsCode = require('vscode');
-const command = require('./command');
+const { nextIssue } = require('./command');
+const { convertSec } = require('./convertTime');
 
-var Issues = function() {
+var Issues = function(newIssues) {
 	this.name = Issues;
-	this.issues = [
-		{
-			IssueName: 'fix ALL the bugs ',
-			plan: 4
-		},
-		{
-			IssueName: 'refractor all the bugs',
-			plan: 4
-		}
-	];
+	this.issues = newIssues;
 	this.state = 0;
 	this.currentIssue = this.issues[this.state];
 	this.issuesIndex = this.issues.length - 1;
 	this.statusBarItem = vsCode.window.createStatusBarItem(
 		vsCode.StatusBarAlignment.left
 	);
-	this.statusBarItem.command = command.nextIssue;
+	this.statusBarItem.command = nextIssue;
 	this.statusBarItem.show();
 	this.updateStatusBar();
 };
 
 Issues.prototype.updateStatusBar = function() {
 	this.statusBarItem.text =
-		this.currentIssue.IssueName + ' - ' + this.currentIssue.plan + ' hours';
+		this.currentIssue.title +
+		' - ' +
+		convertSec(this.currentIssue.estimate_time) +
+		' hours';
 };
 
 Issues.prototype.nextIssue = function() {
@@ -35,6 +30,7 @@ Issues.prototype.nextIssue = function() {
 	} else {
 		this.state++;
 	}
+
 	this.currentIssue = this.issues[this.state];
 	this.updateStatusBar();
 };

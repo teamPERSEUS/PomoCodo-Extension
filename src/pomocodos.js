@@ -86,7 +86,6 @@ Pomocodo.prototype.start = function() {
 	if (this.break) {
 		this.setState(timerStates.timerState.BREAK, command.pausePomocodo);
 	} else {
-		console.log('TEST');
 		this.setState(timerStates.timerState.READY, command.pausePomocodo);
 	}
 	return true;

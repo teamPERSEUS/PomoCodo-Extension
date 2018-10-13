@@ -26,7 +26,7 @@ function activate(context) {
 		});
 		const options = {
 			method: 'POST',
-			uri: 'http://localhost:4001/test',
+			uri: 'http://localhost:4000/api/plannedIssues',
 			headers: {
 				'User-Agent': 'Request-Promise'
 			},
@@ -41,7 +41,21 @@ function activate(context) {
 				if (data === 'false') {
 					return;
 				} else {
-					const PomocodoTimer = new Pomocodo(gitUserId, gitRepo);
+					let newIssues = [
+						{
+							title: 'No Issue Selected',
+							estimate_time: 0
+						}
+					].concat(data);
+					let gitID = data[1].git_id;
+
+					const PomocodoTimer = new Pomocodo(
+						gitUserId,
+						gitRepo,
+						newIssues,
+						gitID
+					);
+
 					let start = vsCode.commands.registerCommand(
 						command.startPomocodo,
 						() => {
