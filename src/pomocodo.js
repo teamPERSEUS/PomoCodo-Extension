@@ -117,10 +117,9 @@ class Pomocodo {
 				10
 			);
 	}
-
 	changeIssue() {
-		clearTimeout(this.timeout);
-		clearInterval(this.interval);
+		// clearTimeout(this.timeout);
+		// clearInterval(this.interval);
 
 		if (this.state !== 'Ready') this.captureData();
 		this.timeSpent = 0;
