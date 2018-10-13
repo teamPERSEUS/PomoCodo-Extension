@@ -25,10 +25,16 @@ function activate(context) {
 			placeHolder: 'Enter your github repo'
 		});
 		const options = {
+			method: 'POST',
 			uri: 'http://localhost:4001/test',
 			headers: {
 				'User-Agent': 'Request-Promise'
-			}
+			},
+			body: {
+				user: gitUserId,
+				url: gitRepo
+			},
+			json: true
 		};
 		rp(options)
 			.then(data => {
