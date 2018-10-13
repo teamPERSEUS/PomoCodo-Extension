@@ -24,7 +24,7 @@ function activate(context) {
 		const gitRepo = await vsCode.window.showInputBox({
 			placeHolder: 'Enter your github repo'
 		});
-		const options = {
+		const options = await {
 			method: 'POST',
 			uri: 'http://localhost:4000/api/plannedIssues',
 			headers: {
@@ -48,7 +48,6 @@ function activate(context) {
 						}
 					].concat(data);
 					let gitID = data[1].git_id;
-
 					const PomocodoTimer = new Pomocodo(
 						gitUserId,
 						gitRepo,
@@ -82,7 +81,7 @@ function activate(context) {
 						}
 					);
 					let changeDoc = vsCode.window.onDidChangeActiveTextEditor(e => {
-						PomocodoTimer.commitDataOnFileChange();
+						PomocodoTimer.captureData();
 						PomocodoTimer.timeSpentonFile = 1;
 						PomocodoTimer.activeFile = e.document.fileName;
 					});

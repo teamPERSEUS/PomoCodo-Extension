@@ -11,6 +11,7 @@ var Issues = function(newIssues) {
 	this.statusBarItem = vsCode.window.createStatusBarItem(
 		vsCode.StatusBarAlignment.left
 	);
+	``;
 	this.statusBarItem.command = nextIssue;
 	this.statusBarItem.show();
 	this.updateStatusBar();

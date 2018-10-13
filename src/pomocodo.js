@@ -17,8 +17,9 @@ class Pomocodo {
 		this.completed = 0;
 		this.activeFile =
 			vsCode.window.activeTextEditor === undefined
-				? null
+				? 'No Active Document'
 				: vsCode.window.activeTextEditor.document.fileName;
+
 		this.timeSpent = 1;
 		this.pomoInterval = 3000;
 		this.shortBreak = 2000;
