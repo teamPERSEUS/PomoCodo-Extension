@@ -81,8 +81,6 @@ function activate(context) {
 						}
 					);
 					let changeDoc = vsCode.window.onDidChangeActiveTextEditor(e => {
-						// console.log(PomocodoTimer.wordCounter);
-						console.log(PomocodoTimer.idleTime + 'ChangeTextEditor');
 						PomocodoTimer.captureData();
 						PomocodoTimer.timeSpentonFile = 1;
 						PomocodoTimer.activeFile = e.document;

@@ -9,9 +9,10 @@ DataCapture.prototype.captureData = function(
 	file,
 	state,
 	time,
-	wordCount
+	wordCount,
+	idleTime
 ) {
-	// console.log(file);
+	console.log(idleTime);
 	if (
 		this.pomoIntervalData[issue] === undefined ||
 		this.pomoIntervalData[issue][file] === undefined ||
@@ -28,7 +29,8 @@ DataCapture.prototype.captureData = function(
 		}
 		let stateObj = {
 			time: time,
-			wordCount: wordCount
+			wordCount: wordCount,
+			idleTime: idleTime
 		};
 		this.pomoIntervalData[issue][file][state] = stateObj;
 	} else {
@@ -39,7 +41,7 @@ DataCapture.prototype.captureData = function(
 		this.pomoIntervalData[issue][file][state].wordCount =
 			stateWordCount === undefined ? wordCount : (stateWordCount += wordCount);
 	}
-	// console.log(this.pomoIntervalData);
+	console.log(this.pomoIntervalData);
 };
 
 exports.DataCapture = DataCapture;

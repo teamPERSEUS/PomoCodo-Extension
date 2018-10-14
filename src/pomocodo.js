@@ -27,7 +27,7 @@ class Pomocodo {
 		this.idleCountDown = this.idleDefault;
 		this.completed = 0;
 		this.timeSpent = 1;
-		this.pomoInterval = 20000;
+		this.pomoInterval = 10000;
 		this.shortBreak = 4000;
 		this.longBreak = 4000;
 		this.remainingTime = this.pomoInterval;
@@ -104,7 +104,6 @@ class Pomocodo {
 		let timesUp = () => {
 			clearTimeout(this.timeout);
 			clearInterval(this.interval);
-			console.log(this.idleTime + 'timeup');
 			this.timeout = 0;
 			this.interval = 0;
 			this.remainingTime = 0;
@@ -131,7 +130,8 @@ class Pomocodo {
 				this.data.pomoIntervalData,
 				this.gitId,
 				this.userId,
-				this.gitRepoUrl
+				this.gitRepoUrl,
+				this.idleTime
 			);
 			this.data.pomoIntervalData = {};
 		}
@@ -151,19 +151,26 @@ class Pomocodo {
 	}
 
 	captureData() {
-		if (this.state != 'Ready')
+		if (this.state != 'Ready') {
+			let idle = this.idleTime;
+			if (this.idleTime === this.idleDefault +1) {
+				idle = 0;
+			}
+
 			this.data.captureData(
 				this.issue.currentIssue.title,
 				this.activeFile.fileName,
 				this.state,
 				this.timeSpent,
-				this.wordCounter
+				this.wordCounter,
+				idle
 			);
+		}
 	}
 	changeIssue() {
 		// clearTimeout(this.timeout);
 		// clearInterval(this.interval);
-		console.log(this.idleTime + 'changeIssue');
+		// console.log(this.idleTime + 'changeIssue');
 		this.wordCounter = 0;
 		this.idleTime = this.idleDefault + 1;
 		this.idleCountDown = this.idleDefault;
