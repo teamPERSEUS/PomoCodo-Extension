@@ -1,7 +1,7 @@
 let request = require('request');
 
 var upload = function(interval, data, gitId, userId, gitRepoUrl) {
-	console.log(interval, data, gitId, userId, gitRepoUrl);
+	// console.log(interval, data, gitId, userId, gitRepoUrl);
 	request('http://localhost:4001/interval', {
 		method: 'POST',
 		body: JSON.stringify({

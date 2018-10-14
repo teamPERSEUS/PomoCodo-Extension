@@ -81,9 +81,12 @@ function activate(context) {
 						}
 					);
 					let changeDoc = vsCode.window.onDidChangeActiveTextEditor(e => {
+						// console.log(PomocodoTimer.wordCounter);
 						PomocodoTimer.captureData();
 						PomocodoTimer.timeSpentonFile = 1;
 						PomocodoTimer.activeFile = e.document;
+						PomocodoTimer.startingWordCount = PomocodoTimer.getWordCount();
+						PomocodoTimer.wordCounter = 0;
 					});
 					context.subscriptions.push([
 						start,

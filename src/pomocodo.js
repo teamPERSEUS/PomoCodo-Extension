@@ -17,16 +17,16 @@ class Pomocodo {
 		this.activeFile =
 			vsCode.window.activeTextEditor === undefined
 				? 'No Active Document'
-				: vsCode.window.activeTextEditor;
+				: vsCode.window.activeTextEditor.document;
 		this.startingWordCount =
 			this.activefile === 'No Active Document' ? 0 : this.getWordCount();
-		// this.totalWordCount =  difference between starting and current
+		this.wordCounter = 0;
 		this.idleTime = 0;
 		this.completed = 0;
 		this.timeSpent = 1;
-		this.pomoInterval = 3000;
-		this.shortBreak = 2000;
-		this.longBreak = 2000;
+		this.pomoInterval = 30000;
+		this.shortBreak = 4000;
+		this.longBreak = 4000;
 		this.remainingTime = this.pomoInterval;
 		this.timeout = 0;
 		this.interval = 0;
@@ -44,7 +44,7 @@ class Pomocodo {
 		if (this.activeFile === 'No Active Document') {
 			return 0;
 		}
-		let doc = this.activeFile.document;
+		let doc = this.activeFile;
 
 		let docContent = doc.getText();
 		docContent = docContent.replace(/(< ([^>]+)<)/g, '').replace(/\s+/g, ' ');
@@ -79,6 +79,7 @@ class Pomocodo {
 
 	startTimer() {
 		let secondPassed = () => {
+			this.wordCounter = this.getWordCount() - this.startingWordCount;
 			this.remainingTime -= oneSecond;
 			this.updateStatusBar();
 			this.timeSpent++;
@@ -90,6 +91,8 @@ class Pomocodo {
 			this.interval = 0;
 			this.remainingTime = 0;
 			this.captureData();
+			this.wordCounter = 0;
+			this.startingWordCount = this.getWordCount();
 			this.timeSpent = 0;
 			this.restart();
 		};
@@ -131,16 +134,18 @@ class Pomocodo {
 		if (this.state != 'Ready')
 			this.data.captureData(
 				this.issue.currentIssue.title,
-				this.activeFile.document.fileName,
+				this.activeFile.fileName,
 				this.state,
 				this.timeSpent,
-				10
+				this.wordCounter
 			);
 	}
 	changeIssue() {
 		// clearTimeout(this.timeout);
 		// clearInterval(this.interval);
 
+		this.wordCounter = 0;
+		this.startingWordCount = this.getWordCount();
 		if (this.state !== 'Ready') this.captureData();
 		this.timeSpent = 0;
 	}
