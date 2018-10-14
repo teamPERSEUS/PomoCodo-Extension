@@ -11,7 +11,7 @@ DataCapture.prototype.captureData = function(
 	time,
 	wordCount
 ) {
-	// console.log(file);
+	console.log(file);
 	if (
 		this.pomoIntervalData[issue] === undefined ||
 		this.pomoIntervalData[issue][file] === undefined ||

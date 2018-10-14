@@ -14,12 +14,15 @@ class Pomocodo {
 		this.gitRepoUrl = gitRepo;
 		this.data = new DataCapture();
 		this.issue = new Issues(newIssues);
-		this.completed = 0;
 		this.activeFile =
 			vsCode.window.activeTextEditor === undefined
 				? 'No Active Document'
-				: vsCode.window.activeTextEditor.document.fileName;
-
+				: vsCode.window.activeTextEditor;
+		this.startingWordCount =
+			this.activefile === 'No Active Document' ? 0 : this.getWordCount();
+		// this.totalWordCount =  difference between starting and current
+		this.idleTime = 0;
+		this.completed = 0;
 		this.timeSpent = 1;
 		this.pomoInterval = 3000;
 		this.shortBreak = 2000;
@@ -36,6 +39,23 @@ class Pomocodo {
 		this.statusBarItem.show();
 		this.updateStatusBar();
 	}
+
+	getWordCount() {
+		if (this.activeFile === 'No Active Document') {
+			return 0;
+		}
+		let doc = this.activeFile.document;
+
+		let docContent = doc.getText();
+		docContent = docContent.replace(/(< ([^>]+)<)/g, '').replace(/\s+/g, ' ');
+		docContent = docContent.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+		let wordCount = 0;
+		if (docContent !== '') {
+			wordCount = docContent.split(' ').length;
+		}
+		return wordCount;
+	}
+
 	updateStatusBar() {
 		const button =
 			this.state === 'Ready' || this.state === 'Paused'
@@ -111,7 +131,7 @@ class Pomocodo {
 		if (this.state != 'Ready')
 			this.data.captureData(
 				this.issue.currentIssue.title,
-				this.activeFile,
+				this.activeFile.document.fileName,
 				this.state,
 				this.timeSpent,
 				10

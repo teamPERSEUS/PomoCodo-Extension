@@ -83,7 +83,7 @@ function activate(context) {
 					let changeDoc = vsCode.window.onDidChangeActiveTextEditor(e => {
 						PomocodoTimer.captureData();
 						PomocodoTimer.timeSpentonFile = 1;
-						PomocodoTimer.activeFile = e.document.fileName;
+						PomocodoTimer.activeFile = e.document;
 					});
 					context.subscriptions.push([
 						start,
