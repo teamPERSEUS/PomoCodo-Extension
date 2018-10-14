@@ -24,7 +24,7 @@ function activate(context) {
 		const gitRepo = await vsCode.window.showInputBox({
 			placeHolder: 'Enter your github repo'
 		});
-		const options = await {
+		const options = {
 			method: 'POST',
 			uri: 'http://localhost:4000/api/plannedIssues',
 			headers: {
@@ -82,10 +82,13 @@ function activate(context) {
 					);
 					let changeDoc = vsCode.window.onDidChangeActiveTextEditor(e => {
 						// console.log(PomocodoTimer.wordCounter);
+						console.log(PomocodoTimer.idleTime + 'ChangeTextEditor');
 						PomocodoTimer.captureData();
 						PomocodoTimer.timeSpentonFile = 1;
 						PomocodoTimer.activeFile = e.document;
 						PomocodoTimer.startingWordCount = PomocodoTimer.getWordCount();
+						PomocodoTimer.idleTime = PomocodoTimer.idleDefault;
+						PomocodoTimer.idleCountDown = PomocodoTimer.idleDefault;
 						PomocodoTimer.wordCounter = 0;
 					});
 					context.subscriptions.push([

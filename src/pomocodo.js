@@ -21,10 +21,13 @@ class Pomocodo {
 		this.startingWordCount =
 			this.activefile === 'No Active Document' ? 0 : this.getWordCount();
 		this.wordCounter = 0;
-		this.idleTime = 0;
+		this.lastSecWordCount = 0;
+		this.idleDefault = 3;
+		this.idleTime = this.idleDefault + 1;
+		this.idleCountDown = this.idleDefault;
 		this.completed = 0;
 		this.timeSpent = 1;
-		this.pomoInterval = 30000;
+		this.pomoInterval = 20000;
 		this.shortBreak = 4000;
 		this.longBreak = 4000;
 		this.remainingTime = this.pomoInterval;
@@ -38,6 +41,18 @@ class Pomocodo {
 		this.statusBarItem.command = startPomocodo;
 		this.statusBarItem.show();
 		this.updateStatusBar();
+	}
+
+	idleChecker(currentWordCount) {
+		if (this.idleCountDown === 0) {
+			this.idleTime += 1;
+		}
+		if (currentWordCount - this.lastSecWordCount === 0) {
+			if (this.idleCountDown > 0) this.idleCountDown -= 1;
+		} else {
+			this.idleCountDown = this.idleDefault;
+		}
+		this.lastSecWordCount = currentWordCount;
 	}
 
 	getWordCount() {
@@ -79,7 +94,9 @@ class Pomocodo {
 
 	startTimer() {
 		let secondPassed = () => {
-			this.wordCounter = this.getWordCount() - this.startingWordCount;
+			let currentWordCount = this.getWordCount();
+			this.wordCounter = currentWordCount - this.startingWordCount;
+			this.idleChecker(currentWordCount);
 			this.remainingTime -= oneSecond;
 			this.updateStatusBar();
 			this.timeSpent++;
@@ -87,11 +104,14 @@ class Pomocodo {
 		let timesUp = () => {
 			clearTimeout(this.timeout);
 			clearInterval(this.interval);
+			console.log(this.idleTime + 'timeup');
 			this.timeout = 0;
 			this.interval = 0;
 			this.remainingTime = 0;
 			this.captureData();
 			this.wordCounter = 0;
+			this.idleTime = this.idleDefault + 1;
+			this.idleCountDown = this.idleDefault;
 			this.startingWordCount = this.getWordCount();
 			this.timeSpent = 0;
 			this.restart();
@@ -143,8 +163,10 @@ class Pomocodo {
 	changeIssue() {
 		// clearTimeout(this.timeout);
 		// clearInterval(this.interval);
-
+		console.log(this.idleTime + 'changeIssue');
 		this.wordCounter = 0;
+		this.idleTime = this.idleDefault + 1;
+		this.idleCountDown = this.idleDefault;
 		this.startingWordCount = this.getWordCount();
 		if (this.state !== 'Ready') this.captureData();
 		this.timeSpent = 0;
