@@ -17,7 +17,7 @@ function activate(context) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "test" is now active!');
 	// console.log(context);
-	async function getUserRepoISsues() {
+	async function getUserRepoIssues() {
 		const gitUserId = await vsCode.window.showInputBox({
 			placeHolder: 'Enter your github UserID'
 		});
@@ -44,16 +44,14 @@ function activate(context) {
 					let newIssues = [
 						{
 							title: 'No Issue Selected',
-							estimate_time: 0
+							estimate_time: 0,
+							git_id: null
 						}
 					].concat(data);
-					let gitID = data[1].git_id;
-					const PomocodoTimer = new Pomocodo(
-						gitUserId,
-						gitRepo,
-						newIssues,
-						gitID
-					);
+					console.log(data[0].username + 'username');
+					console.log(data[0].repo_url + 'url');
+					console.log(newIssues);
+					const PomocodoTimer = new Pomocodo(gitUserId, gitRepo, newIssues);
 
 					let start = vsCode.commands.registerCommand(
 						command.startPomocodo,
@@ -104,7 +102,7 @@ function activate(context) {
 		exports.PomocodoTimer = PomocodoTimer;
 	}
 
-	getUserRepoISsues();
+	getUserRepoIssues();
 }
 
 exports.activate = activate;

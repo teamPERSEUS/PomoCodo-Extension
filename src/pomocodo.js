@@ -128,7 +128,6 @@ class Pomocodo {
 			upload(
 				this.completed,
 				this.data.pomoIntervalData,
-				this.gitId,
 				this.userId,
 				this.gitRepoUrl,
 				this.idleTime
@@ -153,17 +152,18 @@ class Pomocodo {
 	captureData() {
 		if (this.state != 'Ready') {
 			let idle = this.idleTime;
-			if (this.idleTime === this.idleDefault +1) {
+			if (this.idleTime === this.idleDefault + 1) {
 				idle = 0;
 			}
-
+			console.log(this.issue.currentIssue);
 			this.data.captureData(
 				this.issue.currentIssue.title,
 				this.activeFile.fileName,
 				this.state,
 				this.timeSpent,
 				this.wordCounter,
-				idle
+				idle,
+				this.issue.currentIssue.git_id
 			);
 		}
 	}

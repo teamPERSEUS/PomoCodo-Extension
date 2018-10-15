@@ -10,9 +10,9 @@ DataCapture.prototype.captureData = function(
 	state,
 	time,
 	wordCount,
-	idleTime
+	idleTime,
+	git_Id
 ) {
-	console.log(idleTime);
 	if (
 		this.pomoIntervalData[issue] === undefined ||
 		this.pomoIntervalData[issue][file] === undefined ||
@@ -30,7 +30,8 @@ DataCapture.prototype.captureData = function(
 		let stateObj = {
 			time: time,
 			wordCount: wordCount,
-			idleTime: idleTime
+			idleTime: idleTime,
+			git_id: git_Id
 		};
 		this.pomoIntervalData[issue][file][state] = stateObj;
 	} else {

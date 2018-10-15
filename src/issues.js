@@ -5,8 +5,8 @@ const { convertSec } = require('./convertTime');
 var Issues = function(newIssues) {
 	this.name = Issues;
 	this.issues = newIssues;
-	this.state = 0;
-	this.currentIssue = this.issues[this.state];
+	this.index = 0;
+	this.currentIssue = this.issues[this.index];
 	this.issuesIndex = this.issues.length - 1;
 	this.statusBarItem = vsCode.window.createStatusBarItem(
 		vsCode.StatusBarAlignment.left
@@ -26,13 +26,13 @@ Issues.prototype.updateStatusBar = function() {
 };
 
 Issues.prototype.nextIssue = function() {
-	if (this.state === this.issuesIndex) {
-		this.state = 0;
+	if (this.index === this.issuesIndex) {
+		this.index = 0;
 	} else {
-		this.state++;
+		this.index++;
 	}
 
-	this.currentIssue = this.issues[this.state];
+	this.currentIssue = this.issues[this.index];
 	this.updateStatusBar();
 };
 
