@@ -41,17 +41,7 @@ function activate(context) {
 				if (data === 'false') {
 					return;
 				} else {
-					let newIssues = [
-						{
-							title: 'No Issue Selected',
-							estimate_time: 0,
-							git_id: null
-						}
-					].concat(data);
-					console.log(data[0].username + 'username');
-					console.log(data[0].repo_url + 'url');
-					console.log(newIssues);
-					const PomocodoTimer = new Pomocodo(gitUserId, gitRepo, newIssues);
+					const PomocodoTimer = new Pomocodo(gitUserId, gitRepo, data);
 
 					let start = vsCode.commands.registerCommand(
 						command.startPomocodo,

@@ -27,8 +27,8 @@ class Pomocodo {
 		this.idleCountDown = this.idleDefault;
 		this.completed = 0;
 		this.timeSpent = 1;
-		this.pomoInterval = 10000;
-		this.shortBreak = 4000;
+		this.pomoInterval = 5000;
+		this.shortBreak = 2000;
 		this.longBreak = 4000;
 		this.remainingTime = this.pomoInterval;
 		this.timeout = 0;
